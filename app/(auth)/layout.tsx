@@ -15,7 +15,7 @@ export default function AuthLayout({children}: {children: ReactNode}) {
             </Link>
 
             <div className="flex w-full max-w-sm flex-col gap-6">
-                <Link className="flex items-center gap-2 self-center font-medium" href="/">VDemi.</Link>
+                <Link className="flex items-center gap-2 self-center font-medium" href="/">YourLMS.</Link>
                 {children}</div>
         </div>
     )
