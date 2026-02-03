@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   image: { type: String },
   role: { 
     type: String, 
-    enum: ["STUDENT", "TEACHER", "ADMIN"], 
+    enum: ["STUDENT", "INSTRUCTOR", "ADMIN"], 
     default: "STUDENT" 
   },
   provider: { type: String, default: "credentials" }, 

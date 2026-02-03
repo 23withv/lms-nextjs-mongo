@@ -2,40 +2,54 @@
 
 import { connectToDatabase } from "@/lib/mongoose";
 import { User } from "@/models/User";
+import { RegisterSchema } from "@/lib/schemas"; 
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
-export const registerUser = async (formData: FormData) => {
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
+export type RegisterState = {
+  error?: string;
+  success?: boolean;
+};
 
-    if (!name || !email || !password || !confirmPassword) {
-        console.error("Semua field harus diisi");
-        return;
+export const registerUser = async (prevState: RegisterState, formData: FormData): Promise<RegisterState> => {
+    // 1. Ambil data
+    const rawData = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        confirmPassword: formData.get("confirmPassword"),
+    };
+
+    // 2. Validasi Zod
+    const validatedFields = RegisterSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+        return { error: validatedFields.error.issues[0].message };
     }
 
-    if (password !== confirmPassword) {
-        console.error("Password tidak cocok");
-        return;
+    const { name, email, password } = validatedFields.data;
+
+    try {
+        await connectToDatabase();
+
+        // 3. Cek Duplikasi
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return { error: "Email ini sudah digunakan." };
+        }
+
+        // 4. Create User
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
+
+    } catch (err) {
+        console.error("Register Error:", err);
+        return { error: "Gagal mendaftar. Terjadi kesalahan server." };
     }
 
-    await connectToDatabase();
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        console.error("Email sudah terdaftar");
-        return; 
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await User.create({
-        name,
-        email,
-        password: hashedPassword,
-    });
-
-    redirect("/login");
+    redirect("/login?success=account_created");
 };
