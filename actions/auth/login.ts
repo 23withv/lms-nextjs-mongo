@@ -2,29 +2,50 @@
 
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
+import { connectToDatabase } from "@/lib/mongoose";
+import { User } from "@/models/User";
 
-export const loginUser = async (formData: FormData) => {
-    const email = formData.get("email");
-    const password = formData.get("password");
+export type LoginState = {
+  error?: string;
+  success?: boolean;
+};
+
+export const loginUser = async (prevState: LoginState, formData: FormData): Promise<LoginState> => {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     if (!email || !password) {
-        redirect("/login?error=missing_fields"); 
+        return { error: "Mohon isi semua data." };
     }
 
     try {
+        await connectToDatabase();
+        const existingUser = await User.findOne({ email });
+
+        if (!existingUser) {
+            return { error: "Email tidak terdaftar. Silakan registrasi." };
+        }
+        
+        if (!existingUser.password) {
+            return { error: "Akun ini menggunakan login Google/GitHub." };
+        }
+
         await signIn("credentials", {
             email,
             password,
-            redirectTo: "/",
+            redirect: false, 
         });
+        return { success: true };
+
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
-                case "CredentialsSignin":
-                    redirect("/login?error=invalid_credentials");
+                case "CredentialsSignin": 
+                    return { error: "Password salah. Silakan coba lagi." };
+                case "CallbackRouteError":
+                    return { error: "Password atau Email salah." };
                 default:
-                    redirect("/login?error=server_error");
+                    return { error: "Terjadi kesalahan server." };
             }
         }
         throw error; 

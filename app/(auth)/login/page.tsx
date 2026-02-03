@@ -1,38 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GoogleIcon } from "@/components/ui/icons";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { GithubIcon, AlertCircle } from "lucide-react"; 
+import { GoogleIcon } from "@/components/ui/icons"; 
+import { GithubIcon } from "lucide-react"; 
 import Link from "next/link";
 import { signIn } from "@/auth";
-import { loginUser } from "@/actions/auth/login";
+import { EmailLoginForm } from "@/components/auth/login-form"; 
 
-export default async function loginPage(props: { 
-    searchParams: Promise<{ error?: string }> 
-}) {
-    const searchParams = await props.searchParams;
-    const errorMessage = searchParams.error;
-
+export default function LoginPage() {
     return (
-        <Card>
+        <Card className="w-full max-w-sm mx-auto my-10">
             <CardHeader>
                 <CardTitle className="text-xl">Welcome back!</CardTitle>
                 <CardDescription>Login with your Google, Github or Email Account</CardDescription>
             </CardHeader>
 
             <CardContent className="flex flex-col gap-4">
-
-                {errorMessage === "invalid_credentials" && (
-                    <div className="flex items-center gap-2 p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
-                        <AlertCircle className="size-4" />
-                        <p>Email atau Password salah.</p>
-                    </div>
-                )}
-                {errorMessage === "missing_fields" && (
-                     <div className="text-sm text-red-500 bg-red-50 p-2 rounded">Mohon isi semua data.</div>
-                )}
-
                 <form
                     action={async () => {
                         "use server";
@@ -61,21 +43,8 @@ export default async function loginPage(props: {
                     <span className="relative z-10 bg-card px-2 text-muted-foreground">Or continue with</span>
                 </div>
 
-                <form action={loginUser} className="grid gap-3">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="m@example.com" required />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" name="password" type="password" placeholder="********" required />
-                    </div>
-
-                    <Button type="submit" className="w-full">Continue with Email</Button>
-                </form>
-
-                <Link className="text-sm mt-3 text-right" href="/register">
+                <EmailLoginForm />
+                <Link className="text-sm mt-3 text-right hover:text-primary transition-colors" href="/register">
                     Don't have an account?{" "}
                     <span className="underline">Register</span>
                 </Link>

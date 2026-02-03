@@ -127,9 +127,11 @@ export default async function DashboardPage() {
                         </div>
                     </div>
 
-                    <Button variant="outline" className="w-full h-8 text-xs" size="sm">
-                        Edit Profil
-                    </Button>
+                    <Link href="/dashboard/settings" className="w-full">
+                        <Button variant="outline" className="w-full h-8 text-xs" size="sm">
+                          Edit Profile
+                        </Button>
+                    </Link>
                 </CardContent>
             </Card>
 
