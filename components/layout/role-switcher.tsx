@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { switchMode } from "@/actions/set-mode";
+import { switchMode } from "@/actions/common/set-mode";
 
 interface RoleSwitcherProps {
   actualRole: string; 
@@ -79,7 +79,7 @@ export function RoleSwitcher({ actualRole, currentMode }: RoleSwitcherProps) {
                 {currentMode === "INSTRUCTOR" && <Check className="ml-auto h-4 w-4" />}
                 </DropdownMenuItem>
             )}
-            
+
             {actualRole === "ADMIN" && (
                 <>
                     <DropdownMenuSeparator />

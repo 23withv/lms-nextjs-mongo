@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Loader2, Save, ShieldAlert } from "lucide-react"; 
 import Link from "next/link";
 import { useActionState } from "react";
-import { createUser } from "@/actions/create-user";
+import { createUser } from "@/actions/admin/create-user";
 
 export default function NewUserPage() {
   const [state, action, isPending] = useActionState(createUser, { error: "", success: false });

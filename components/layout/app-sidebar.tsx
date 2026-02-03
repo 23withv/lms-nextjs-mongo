@@ -18,7 +18,7 @@ import Link from "next/link";
 import { signOut, auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
-import { RoleSwitcher } from "@/components/role-switcher";
+import { RoleSwitcher } from "@/components/layout/role-switcher";
 
 const studentItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },

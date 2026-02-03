@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookOpen, DollarSign, Users, PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { StatsCard } from "@/components/shared/stats-card";
 
 export default async function InstructorDashboardPage() {
   const session = await auth();
@@ -15,10 +16,10 @@ export default async function InstructorDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center border-b pb-4">
         <div>
-            <h2 className="text-3xl font-bold tracking-tight">Instructor Dashboard</h2>
-            <p className="text-muted-foreground">Welcome back, {session.user.name}. Here is your performance overview.</p>
+            <h2 className="text-2xl font-bold tracking-tight">Instructor Dashboard</h2>
+            <p className="text-muted-foreground">Overview of your teaching performance.</p>
         </div>
         <Link href="/dashboard/instructor/create">
             <Button>
@@ -28,36 +29,27 @@ export default async function InstructorDashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">+0 from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Draft courses included</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Rp 0</div>
-            <p className="text-xs text-muted-foreground">Withdrawable amount</p>
-          </CardContent>
-        </Card>
+        <StatsCard 
+            title="Total Students" 
+            value="0" 
+            icon={Users} 
+            color="text-blue-500" 
+            bg="bg-blue-50"
+        />
+        <StatsCard 
+            title="Active Courses" 
+            value="0" 
+            icon={BookOpen} 
+            color="text-purple-500" 
+            bg="bg-purple-50"
+        />
+        <StatsCard 
+            title="Total Revenue" 
+            value="Rp 0" 
+            icon={DollarSign} 
+            color="text-green-500" 
+            bg="bg-green-50"
+        />
       </div>
 
       <Card>
@@ -89,6 +81,7 @@ export default async function InstructorDashboardPage() {
             </Table>
         </CardContent>
       </Card>
+      
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { GithubIcon, AlertCircle } from "lucide-react"; 
 import Link from "next/link";
 import { signIn } from "@/auth";
-import { loginUser } from "@/actions/login";
+import { loginUser } from "@/actions/auth/login";
 
 export default async function loginPage(props: { 
     searchParams: Promise<{ error?: string }> 

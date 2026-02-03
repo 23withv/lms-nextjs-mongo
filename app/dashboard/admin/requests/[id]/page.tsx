@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, XCircle, ExternalLink, Video } from "lucide-react";
 import Link from "next/link";
-import { updateRequestStatus } from "@/actions/manage-requests";
+import { updateRequestStatus } from "@/actions/admin/manage-requests";
 
 export default async function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();

@@ -8,15 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Rocket, Youtube, Code2, Layers, Wrench } from "lucide-react"; 
 import { useActionState } from "react";
-import { submitInstructorRequest } from "@/actions/instructor-request";
+import { submitInstructorRequest } from "@/actions/instructor/instructor-request";
 
 export default function BecomeInstructorPage() {
   const [state, action, isPending] = useActionState(submitInstructorRequest, { error: "", success: false, inputs: {} });
 
   return (
     <div className="container max-w-3xl mx-auto py-10 space-y-8">
-      
-      {/* Banner */}
       <div className="bg-primary/5 border border-primary/10 rounded-xl p-8 text-center space-y-4">
         <div className="inline-flex items-center justify-center p-3 bg-white shadow-sm rounded-full mb-2">
             <Rocket className="w-8 h-8 text-primary" />
@@ -40,8 +38,6 @@ export default function BecomeInstructorPage() {
             )}
 
             <form action={action} className="space-y-8">
-                
-                {/* 1. Experience & LinkedIn */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Teaching Experience</Label>

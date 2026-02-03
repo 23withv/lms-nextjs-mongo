@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { GithubIcon, AlertCircle, Loader2 } from "lucide-react"; 
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { registerUser } from "@/actions/register";
+import { registerUser } from "@/actions/auth/register";
 import { useActionState } from "react";
 
 export default function RegisterPage() {
