@@ -8,11 +8,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { getNotifications } from "@/actions/common/notifications";
+import { NotificationBell } from "@/components/layout/notification-bell";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) return redirect("/login");
 
+  const notification = await getNotifications();
   const cookieStore = await cookies();
   const currentMode = cookieStore.get("lms_active_mode")?.value;
 
@@ -49,11 +52,17 @@ export default async function DashboardPage() {
         <div>
            <h2 className="text-2xl font-bold tracking-tight">Halo, {dbUser.name.split(" ")[0]}! 👋</h2>
         </div>
-        <Link href="/search">
-            <Button size="sm" variant="outline" className="shadow-sm">
-                <BookOpen className="mr-2 h-4 w-4" /> Cari Kursus
-            </Button>
-        </Link>
+
+        <div className="flex items-center gap-2">
+            <Link href="/search">
+                <Button size="sm" variant="outline" className="shadow-sm">
+                    <BookOpen className="mr-2 h-4 w-4" /> Cari Kursus
+                </Button>
+            </Link>
+
+            <NotificationBell initialNotifications={notification} />
+        </div>
+
       </div>
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
@@ -116,7 +125,7 @@ export default async function DashboardPage() {
                 </CardHeader>
                 <CardContent className="flex flex-col items-center text-center space-y-3">
                     <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-muted shadow-sm">
-                        <Image src={userImage} alt="Foto Profil" fill className="object-cover" />
+                        <Image src={userImage} alt="Foto Profil" fill className="object-cover" unoptimized />
                     </div>
                     
                     <div>
