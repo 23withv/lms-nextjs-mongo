@@ -23,7 +23,7 @@ export default async function DashboardPage() {
     return redirect("/dashboard/instructor");
   }
   if (currentMode === "ADMIN" && session.user.role === "ADMIN") {
-    return redirect("/dashboard/admin/users");
+    return redirect("/dashboard/admin");
   }
 
   await connectToDatabase();

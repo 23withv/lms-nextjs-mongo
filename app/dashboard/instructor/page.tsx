@@ -6,12 +6,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BookOpen, DollarSign, Users, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { StatsCard } from "@/components/shared/stats-card";
+import { getNotifications } from "@/actions/common/notifications";
+import { NotificationBell } from "@/components/layout/notification-bell";
 
 export default async function InstructorDashboardPage() {
   const session = await auth();
   if (session?.user?.role !== "INSTRUCTOR" && session?.user?.role !== "ADMIN") {
     return redirect("/dashboard");
   }
+
+  const notifications = await getNotifications();
 
   return (
     <div className="flex flex-col gap-6">
@@ -21,11 +25,16 @@ export default async function InstructorDashboardPage() {
             <h2 className="text-2xl font-bold tracking-tight">Instructor Dashboard</h2>
             <p className="text-muted-foreground">Overview of your teaching performance.</p>
         </div>
-        <Link href="/dashboard/instructor/create">
-            <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Create New Course
-            </Button>
-        </Link>
+        
+        <div className="flex items-center gap-3">
+            <Link href="/dashboard/instructor/create">
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Create New Course
+                </Button>
+            </Link>
+
+            <NotificationBell initialNotifications={notifications} />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -34,21 +43,21 @@ export default async function InstructorDashboardPage() {
             value="0" 
             icon={Users} 
             color="text-blue-500" 
-            bg="bg-blue-50"
+            bg="bg-blue-50 dark:bg-blue-900/20" 
         />
         <StatsCard 
             title="Active Courses" 
             value="0" 
             icon={BookOpen} 
             color="text-purple-500" 
-            bg="bg-purple-50"
+            bg="bg-purple-50 dark:bg-purple-900/20"
         />
         <StatsCard 
             title="Total Revenue" 
             value="Rp 0" 
             icon={DollarSign} 
             color="text-green-500" 
-            bg="bg-green-50"
+            bg="bg-green-50 dark:bg-green-900/20"
         />
       </div>
 

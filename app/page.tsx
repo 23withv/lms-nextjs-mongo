@@ -9,14 +9,13 @@ import { BookOpen, Users, Trophy, CheckCircle, ArrowRight, Star, MonitorPlay } f
 export default async function Home() {
   const session = await auth();
 
-  // Data Dummy untuk Preview Kursus
   const featuredCourses = [
     {
       title: "Fullstack Web Development",
       category: "Programming",
       students: "1,204",
       rating: 4.8,
-      image: "bg-blue-100", // Ganti dengan Image asli nanti
+      image: "bg-blue-100",
       color: "text-blue-600"
     },
     {
@@ -39,8 +38,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      
-      {/* --- HEADER --- */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-2xl tracking-tight text-primary">
@@ -82,8 +79,6 @@ export default async function Home() {
       </header>
 
       <main className="flex-1">
-        
-        {/* --- HERO SECTION --- */}
         <section className="relative py-20 md:py-32 overflow-hidden">
           <div className="container mx-auto px-4 text-center relative z-10">
             <Badge variant="secondary" className="mb-4 px-4 py-1 text-sm rounded-full">
@@ -121,14 +116,12 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Background Decoration */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-6xl -z-10 opacity-10 dark:opacity-5">
              <div className="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
              <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
           </div>
         </section>
 
-        {/* --- STATS SECTION --- */}
         <section className="border-y bg-muted/30 py-12">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -152,7 +145,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* --- FEATURES SECTION --- */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16 max-w-2xl mx-auto">
@@ -208,7 +200,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* --- POPULAR COURSES PREVIEW --- */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-end mb-10">
@@ -254,7 +245,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* --- CTA SECTION --- */}
         <section className="py-20">
            <div className="container mx-auto px-4">
              <div className="bg-primary rounded-3xl p-8 md:p-16 text-center text-primary-foreground relative overflow-hidden">
@@ -269,8 +259,7 @@ export default async function Home() {
                    </Button>
                  </Link>
                </div>
-               
-               {/* Decorative Circles */}
+
                <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                <div className="absolute bottom-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
              </div>
@@ -279,7 +268,6 @@ export default async function Home() {
 
       </main>
 
-      {/* --- FOOTER --- */}
       <footer className="py-10 bg-background border-t">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">

@@ -12,13 +12,17 @@ import {
 } from "@/components/ui/sidebar";
 import { 
   LayoutDashboard, Compass, BookOpen, LogOut, Users, FileText, 
-  Presentation, BarChart, PlusCircle, ShieldCheck 
+  Presentation, BarChart, PlusCircle, ShieldCheck, 
+  icons
 } from "lucide-react";
 import Link from "next/link";
 import { signOut, auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
 import { RoleSwitcher } from "@/components/layout/role-switcher";
+import { title } from "process";
+import { url } from "inspector";
+import { Icon } from "@radix-ui/react-select";
 
 const studentItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -33,6 +37,7 @@ const instructorItems = [
 ];
 
 const adminItems = [
+  { title: "Dashboard", url: "/dashboard/admin", icon: LayoutDashboard },
   { title: "Manage Users", url: "/dashboard/admin/users", icon: Users },
   { title: "Instructor Requests", url: "/dashboard/admin/requests", icon: FileText },
 ];
