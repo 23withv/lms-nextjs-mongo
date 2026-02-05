@@ -3,102 +3,95 @@
 import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/mongoose";
 import { InstructorRequest } from "@/models/InstructorRequest";
-import { redirect } from "next/navigation";
+import { User } from "@/models/User"; 
+import { Notification } from "@/models/Notification"; 
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-const youtubeRegex = /^(https?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)\/.+$/;
-const linkedinRegex = /^(https?:\/\/)?([\w]+\.)?linkedin\.com\/.*$/; 
-
 const RequestSchema = z.object({
-  experience: z.enum(["No Experience", "Private Tutoring", "Professional Instructor", "Online Course Creator"]),
+  experience: z.string().min(1, "Please select your teaching experience"),
   
-  skills: z.string().min(3, "Please fill in at least one technical skill"),
+  linkedin: z.union([
+    z.literal(""), 
+    z.string().regex(/^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+\/?$/, "Invalid LinkedIn URL (must be linkedin.com/in/username)")
+  ]),
+
+  languages: z.string().min(1, "Please list your programming languages"),
+  frameworks: z.string().min(1, "Please list frameworks you know"),
+  tools: z.string().min(1, "Please list tools you use"),
   
-  video1: z.string()
-    .url("Invalid URL format")
-    .regex(youtubeRegex, "Link must be from YouTube (youtube.com or youtu.be)"),
-    
-  video2: z.string()
-    .url("Invalid URL format")
-    .regex(youtubeRegex, "Link must be from YouTube (youtube.com or youtu.be)"),
+  video1: z.string().regex(/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/, "Video 1 must be a valid YouTube URL"),
+  video2: z.string().regex(/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/, "Video 2 must be a valid YouTube URL"),
   
-  motivation: z.string().min(20, "Please explain your motivation in more detail (min 20 chars)."),
-  
-  linkedin: z.string()
-    .optional()
-    .or(z.literal("")) 
-    .refine((val) => {
-        if (!val) return true; 
-        return linkedinRegex.test(val); 
-    }, "Link must be a valid LinkedIn profile (linkedin.com)"),
+  motivation: z.string().min(20, "Motivation must be at least 20 characters"),
 });
 
-export type ActionState = { 
-  error?: string; 
-  success?: boolean;
-  inputs?: any; 
+export type RequestState = {
+  error?: string;
+  success?: boolean;     
+  message?: string;      
+  inputs?: Record<string, string>; 
 };
 
-export async function submitInstructorRequest(prevState: ActionState, formData: FormData): Promise<ActionState> {
+export async function submitInstructorRequest(prevState: RequestState, formData: FormData): Promise<RequestState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You must be logged in." };
+  if (!session?.user) return { error: "Unauthorized", success: false };
 
-  const languages = formData.get("languages") as string || "";
-  const frameworks = formData.get("frameworks") as string || "";
-  const tools = formData.get("tools") as string || "";
-
-  const combinedSkills = [languages, frameworks, tools]
-    .filter(s => s.trim() !== "")
-    .join(", ");
-
-  const rawData = {
+  const rawData: Record<string, string> = {
     experience: formData.get("experience") as string,
-    skills: combinedSkills,
+    linkedin: formData.get("linkedin") as string,
+    languages: formData.get("languages") as string,
+    frameworks: formData.get("frameworks") as string,
+    tools: formData.get("tools") as string,
     video1: formData.get("video1") as string,
     video2: formData.get("video2") as string,
     motivation: formData.get("motivation") as string,
-    linkedin: formData.get("linkedin") as string,
-    
-    _languages: languages,
-    _frameworks: frameworks,
-    _tools: tools,
   };
 
   const validated = RequestSchema.safeParse(rawData);
+
   if (!validated.success) {
     return { 
-      error: validated.error.issues[0].message,
-      inputs: rawData 
+        error: validated.error.issues[0].message,
+        success: false,
+        inputs: rawData 
     };
   }
 
-  const { experience, skills, video1, video2, motivation, linkedin } = validated.data;
-
   try {
     await connectToDatabase();
-
-    const existingRequest = await InstructorRequest.findOne({ 
-      userId: session.user.id, 
-      status: "PENDING" 
-    });
-
-    if (existingRequest) {
-      return { error: "You already have a pending application.", inputs: rawData };
+    
+    const existing = await InstructorRequest.findOne({ userId: session.user.id });
+    if (existing) {
+        if (existing.status === "PENDING") {
+            return { error: "You already have a pending request.", success: false, inputs: rawData };
+        }
+        if (existing.status === "APPROVED") {
+            return { error: "You are already an instructor.", success: false, inputs: rawData };
+        }
     }
 
     await InstructorRequest.create({
       userId: session.user.id,
-      experience,
-      skills: skills.split(",").map(s => s.trim()), 
-      videoPortfolios: [video1, video2],
-      motivation,
-      linkedinUrl: linkedin || "",
+      ...validated.data, 
+      status: "PENDING"
     });
 
-  } catch (err) {
-    console.error("Instructor Request Error:", err);
-    return { error: "Failed to submit application.", inputs: rawData };
-  }
+    const admins = await User.find({ role: "ADMIN" });
+    for (const admin of admins) {
+        await Notification.create({
+            userId: admin._id,
+            title: "New Instructor Request 📝",
+            message: `${session.user.name} has applied to become an instructor. Please review.`,
+            type: "INFO",
+        });
+    }
 
-  redirect("/become-instructor/success");
+    revalidatePath("/become-instructor");
+    return { success: true, message: "Application submitted! Please wait for approval.", inputs: {} };
+
+  } catch (error) {
+    console.log(error);
+    return { error: "Failed to submit request.", success: false, inputs: rawData };
+  }
 }

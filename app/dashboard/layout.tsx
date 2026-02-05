@@ -8,7 +8,6 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 1. Proteksi Halaman
   const session = await auth();
   if (!session) redirect("/login");
 
@@ -16,7 +15,6 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
-        {/* Trigger adalah tombol hamburger menu untuk mobile/desktop */}
         <div className="p-4 border-b flex items-center gap-4">
             <SidebarTrigger /> 
             <span className="font-medium">LMS Platform</span>

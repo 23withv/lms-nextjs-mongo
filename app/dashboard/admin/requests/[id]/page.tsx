@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/mongoose";
 import { InstructorRequest } from "@/models/InstructorRequest";
-import { User } from "@/models/User"; 
+import { User } from "@/models/User";
 import { redirect, notFound } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, XCircle, ExternalLink, Video } from "lucide-react";
@@ -20,8 +20,15 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const req = await InstructorRequest.findById(id).populate("userId", "name email image");
 
   if (!req) return notFound();
-  const approveAction = updateRequestStatus.bind(null, req._id.toString(), "APPROVED");
-  const rejectAction = updateRequestStatus.bind(null, req._id.toString(), "REJECTED");
+  const approveAction = async () => {
+    "use server";
+    await updateRequestStatus(req._id.toString(), "APPROVED");
+  };
+
+  const rejectAction = async () => {
+    "use server";
+    await updateRequestStatus(req._id.toString(), "REJECTED");
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -38,11 +45,11 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 <CardContent className="space-y-4">
                     <div>
                         <div className="text-sm text-muted-foreground">Full Name</div>
-                        <div className="font-medium text-lg">{req.userId?.name}</div>
+                        <div className="font-medium text-lg">{req.userId?.name || "Unknown"}</div>
                     </div>
                     <div>
                         <div className="text-sm text-muted-foreground">Email</div>
-                        <div>{req.userId?.email}</div>
+                        <div>{req.userId?.email || "-"}</div>
                     </div>
                     <div>
                         <div className="text-sm text-muted-foreground">Experience Level</div>
@@ -90,9 +97,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                     <div>
                         <h3 className="text-sm font-semibold mb-2">Technical Skills</h3>
                         <div className="flex flex-wrap gap-2">
-                            {req.skills.map((skill: string, i: number) => (
+                            {req.skills?.map((skill: string, i: number) => (
                                 <Badge key={i} variant="outline" className="px-3 py-1">{skill}</Badge>
-                            ))}
+                            )) || <span className="text-muted-foreground text-sm">-</span>}
                         </div>
                     </div>
 
@@ -106,7 +113,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                     <div>
                         <h3 className="text-sm font-semibold mb-2">Video Portfolio</h3>
                         <div className="grid gap-3">
-                            {req.videoPortfolios.map((link: string, i: number) => (
+                            {req.videoPortfolios?.map((link: string, i: number) => (
                                 <div key={i} className="flex items-center gap-3 p-3 border rounded-md">
                                     <div className="bg-red-100 p-2 rounded-full">
                                         <Video className="w-5 h-5 text-red-600" />
@@ -118,7 +125,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                                         </a>
                                     </div>
                                 </div>
-                            ))}
+                            )) || <span className="text-muted-foreground text-sm">No videos attached.</span>}
                         </div>
                     </div>
                 </CardContent>

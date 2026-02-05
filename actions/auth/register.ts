@@ -12,7 +12,6 @@ export type RegisterState = {
 };
 
 export const registerUser = async (prevState: RegisterState, formData: FormData): Promise<RegisterState> => {
-    // 1. Ambil data
     const rawData = {
         name: formData.get("name"),
         email: formData.get("email"),
@@ -20,7 +19,6 @@ export const registerUser = async (prevState: RegisterState, formData: FormData)
         confirmPassword: formData.get("confirmPassword"),
     };
 
-    // 2. Validasi Zod
     const validatedFields = RegisterSchema.safeParse(rawData);
 
     if (!validatedFields.success) {
@@ -31,14 +29,11 @@ export const registerUser = async (prevState: RegisterState, formData: FormData)
 
     try {
         await connectToDatabase();
-
-        // 3. Cek Duplikasi
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return { error: "Email ini sudah digunakan." };
+            return { error: "Email is laready registered." };
         }
 
-        // 4. Create User
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({
             name,
@@ -48,7 +43,7 @@ export const registerUser = async (prevState: RegisterState, formData: FormData)
 
     } catch (err) {
         console.error("Register Error:", err);
-        return { error: "Gagal mendaftar. Terjadi kesalahan server." };
+        return { error: "Registration failed. Something went wrong." };
     }
 
     redirect("/login?success=account_created");

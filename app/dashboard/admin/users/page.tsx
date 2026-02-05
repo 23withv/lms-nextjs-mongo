@@ -1,29 +1,27 @@
-import { auth } from "@/auth";
-import { connectToDatabase } from "@/lib/mongoose";
-import { User } from "@/models/User";
-import { redirect } from "next/navigation";
+import { getPaginatedUsers } from "@/actions/admin/users";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import Link from "next/link";
+import { Plus } from "lucide-react";
+import { PaginationControl } from "@/components/shared/pagination-control";
 
-export default async function AdminUsersPage() {
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
-    return redirect("/dashboard");
-  }
+interface SearchParamsProps {
+  searchParams: Promise<{ page?: string }>;
+}
 
-  await connectToDatabase();
-  const users = await User.find({}).sort({ _id: -1 });
+export default async function ManageUsersPage(props: SearchParamsProps) {
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams.page) || 1;
+  const { users, totalPages } = await getPaginatedUsers(currentPage, 10);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex items-center justify-between">
         <div>
-            <h2 className="text-3xl font-bold tracking-tight">User Management</h2>
-            <p className="text-muted-foreground">Kelola pengguna dan hak akses sistem.</p>
+          <h2 className="text-3xl font-bold tracking-tight">User Management</h2>
+          <p className="text-muted-foreground">Kelola pengguna dan hak akses sistem.</p>
         </div>
         <Link href="/dashboard/admin/users/new">
             <Button>
@@ -34,7 +32,8 @@ export default async function AdminUsersPage() {
 
       <Card>
         <CardHeader>
-            <CardTitle>Registered Users ({users.length})</CardTitle>
+            <CardTitle>Registered Users</CardTitle>
+            <CardDescription>Menampilkan halaman {currentPage} dari {totalPages} total halaman.</CardDescription>
         </CardHeader>
         <CardContent>
             <Table>
@@ -47,31 +46,36 @@ export default async function AdminUsersPage() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {users.map((user) => {
-                        const safeRole = user.role || "STUDENT";
-                        const safeDate = user.createdAt 
-                            ? new Date(user.createdAt).toLocaleDateString() 
-                            : "N/A";
-
-                        return (
-                            <TableRow key={user._id.toString()}>
-                                <TableCell className="font-medium">{user.name || "No Name"}</TableCell>
+                    {users.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                                No users found.
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        users.map((user) => (
+                            <TableRow key={user._id}>
+                                <TableCell className="font-medium">{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
                                     <Badge variant={
-                                        safeRole === "ADMIN" ? "destructive" : 
-                                        safeRole === "INSTRUCTOR" ? "default" : 
-                                        "secondary"
+                                        user.role === "ADMIN" ? "destructive" : 
+                                        user.role === "INSTRUCTOR" ? "default" : "secondary"
                                     }>
-                                        {safeRole}
+                                        {user.role}
                                     </Badge>
                                 </TableCell>
-                                <TableCell>{safeDate}</TableCell>
+                                <TableCell>
+                                    {new Date(user.createdAt).toLocaleDateString("id-ID")}
+                                </TableCell>
                             </TableRow>
-                        );
-                    })}
+                        ))
+                    )}
                 </TableBody>
             </Table>
+            
+            <PaginationControl totalPages={totalPages} />
+
         </CardContent>
       </Card>
     </div>

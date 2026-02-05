@@ -32,16 +32,15 @@ export default async function DashboardPage() {
   if (!dbUser) return redirect("/login");
 
   const userImage = session.user.image || `https://ui-avatars.com/api/?name=${dbUser.name}&background=random`;
-  
-  const joinDate = new Date(dbUser.createdAt).toLocaleDateString("id-ID", {
+  const joinDate = new Date(dbUser.createdAt).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   });
 
   const formatRole = (role: string) => {
     if (role === "ADMIN") return "Administrator";
-    if (role === "INSTRUCTOR") return "Instruktur";
-    return "Siswa";
+    if (role === "INSTRUCTOR") return "Instructor";
+    return "Student";
   };
 
   const isStudent = dbUser.role === "STUDENT";
@@ -50,13 +49,13 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6 pb-10">
       <div className="flex flex-row justify-between items-center border-b pb-4">
         <div>
-           <h2 className="text-2xl font-bold tracking-tight">Halo, {dbUser.name.split(" ")[0]}! 👋</h2>
+           <h2 className="text-2xl font-bold tracking-tight">Hello, {dbUser.name.split(" ")[0]}! 👋</h2>
         </div>
 
         <div className="flex items-center gap-2">
             <Link href="/search">
                 <Button size="sm" variant="outline" className="shadow-sm">
-                    <BookOpen className="mr-2 h-4 w-4" /> Cari Kursus
+                    <BookOpen className="mr-2 h-4 w-4" /> Browse Courses
                 </Button>
             </Link>
 
@@ -67,29 +66,29 @@ export default async function DashboardPage() {
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <StatsCard 
-            title="Kursus Aktif" 
+            title="Active Courses" 
             value="0" 
             icon={BookOpen} 
             color="text-blue-500" 
             bg="bg-blue-50"
         />
         <StatsCard 
-            title="Sertifikat" 
+            title="Certificates" 
             value="0" 
             icon={Trophy} 
             color="text-yellow-500" 
             bg="bg-yellow-50"
         />
         <StatsCard 
-            title="Jam Belajar" 
-            value="0j 0m" 
+            title="Learning Hours" 
+            value="0h 0m" 
             icon={Clock} 
             color="text-green-500" 
             bg="bg-green-50"
         />
         <StatsCard 
             title="Streak" 
-            value="0 Hari" 
+            value="0 Days" 
             icon={Flame} 
             color="text-orange-500" 
             bg="bg-orange-50"
@@ -99,7 +98,7 @@ export default async function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-7">
         <Card className="col-span-7 md:col-span-4 lg:col-span-5 shadow-sm">
             <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Lanjutkan Belajar</CardTitle>
+                <CardTitle className="text-lg">Continue Learning</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col items-center justify-center py-10 text-center border border-dashed rounded-lg bg-muted/20">
@@ -107,11 +106,11 @@ export default async function DashboardPage() {
                         <PlayCircle className="h-6 w-6 text-primary" />
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                        Belum ada aktivitas belajar terbaru.
+                        No recent learning activity.
                     </p>
                     <Link href="/search">
                         <Button size="sm">
-                            Mulai Belajar <ArrowRight className="ml-2 h-3 w-3" />
+                            Start Learning <ArrowRight className="ml-2 h-3 w-3" />
                         </Button>
                     </Link>
                 </div>
@@ -121,11 +120,17 @@ export default async function DashboardPage() {
         <div className="col-span-7 md:col-span-3 lg:col-span-2 space-y-4">
             <Card className="shadow-sm">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Profil Saya</CardTitle>
+                    <CardTitle className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">My Profile</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center text-center space-y-3">
                     <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-muted shadow-sm">
-                        <Image src={userImage} alt="Foto Profil" fill className="object-cover" unoptimized />
+                        <Image 
+                            src={userImage} 
+                            alt="Profile Photo" 
+                            fill 
+                            className="object-cover" 
+                            unoptimized 
+                        />
                     </div>
                     
                     <div>
@@ -145,20 +150,20 @@ export default async function DashboardPage() {
             </Card>
 
             {isStudent && (
-                <Card className="bg-liner-to-br from-indigo-50 to-purple-50 border-indigo-100 shadow-sm">
+                <Card className="bg-linier-to-br from-indigo-50 to-purple-50 border-indigo-100 shadow-sm">
                     <CardContent className="p-4 flex flex-col gap-3">
                         <div className="flex items-center gap-3">
                             <div className="bg-white p-2 rounded-md shadow-sm">
                                 <GraduationCap className="h-5 w-5 text-indigo-600" />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-sm text-indigo-950">Ingin Mengajar?</h4>
-                                <p className="text-xs text-indigo-600/80">Bagikan skill Anda.</p>
+                                <h4 className="font-semibold text-sm text-indigo-950">Want to Teach?</h4>
+                                <p className="text-xs text-indigo-600/80">Share your skills.</p>
                             </div>
                         </div>
                         <Link href="/become-instructor" className="w-full">
                             <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-none" size="sm">
-                                Daftar Jadi Guru
+                                Become an Instructor
                             </Button>
                         </Link>
                     </CardContent>

@@ -15,7 +15,7 @@ export const loginUser = async (prevState: LoginState, formData: FormData): Prom
     const password = formData.get("password") as string;
 
     if (!email || !password) {
-        return { error: "Mohon isi semua data." };
+        return { error: "Please fill in all fields." };
     }
 
     try {
@@ -23,11 +23,11 @@ export const loginUser = async (prevState: LoginState, formData: FormData): Prom
         const existingUser = await User.findOne({ email });
 
         if (!existingUser) {
-            return { error: "Email tidak terdaftar. Silakan registrasi." };
+            return { error: "Email not registered. Please sign up" };
         }
         
         if (!existingUser.password) {
-            return { error: "Akun ini menggunakan login Google/GitHub." };
+            return { error: "This account uses Google/GitHub login." };
         }
 
         await signIn("credentials", {
@@ -41,11 +41,11 @@ export const loginUser = async (prevState: LoginState, formData: FormData): Prom
         if (error instanceof AuthError) {
             switch (error.type) {
                 case "CredentialsSignin": 
-                    return { error: "Password salah. Silakan coba lagi." };
+                    return { error: "Invalid password. Please try again" };
                 case "CallbackRouteError":
-                    return { error: "Password atau Email salah." };
+                    return { error: "Invalid email or password." };
                 default:
-                    return { error: "Terjadi kesalahan server." };
+                    return { error: "Something went wrong. Please try again." };
             }
         }
         throw error; 

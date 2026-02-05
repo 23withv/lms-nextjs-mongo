@@ -9,9 +9,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const CreateUserSchema = z.object({
-  name: z.string().min(2, "Nama minimal 2 karakter"),
-  email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export type ActionState = {
@@ -42,7 +42,7 @@ export async function createUser(prevState: ActionState, formData: FormData): Pr
     await connectToDatabase();
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return { error: "Email sudah terdaftar." };
+      return { error: "Email is laready registered." };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,7 +57,7 @@ export async function createUser(prevState: ActionState, formData: FormData): Pr
 
   } catch (err) {
     console.error("Create Admin Error:", err);
-    return { error: "Gagal membuat admin." };
+    return { error: "Failed to create user. Please try again." };
   }
 
   redirect("/dashboard/admin/users");
