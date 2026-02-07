@@ -11,6 +11,14 @@ const UserSchema = new mongoose.Schema({
     default: "STUDENT" 
   },
   provider: { type: String, default: "credentials" }, 
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals:true }
+});
+
+UserSchema.virtual("id").get(function() {
+  return this._id.toHexString();
+});
 
 export const User = mongoose.models?.User || mongoose.model("User", UserSchema);

@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const InstructorRequestSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -17,6 +17,14 @@ const InstructorRequestSchema = new Schema({
     default: "PENDING" 
   },
   adminFeedback: { type: String },
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+InstructorRequestSchema.virtual("id").get(function() {
+  return this._id.toHexString();
+});
 
 export const InstructorRequest = models.InstructorRequest || model("InstructorRequest", InstructorRequestSchema);

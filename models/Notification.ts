@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const NotificationSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -10,6 +10,14 @@ const NotificationSchema = new Schema({
     default: "INFO" 
   },
   isRead: { type: Boolean, default: false },
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+NotificationSchema.virtual("id").get(function() {
+  return this._id.toHexString();
+});
 
 export const Notification = models.Notification || model("Notification", NotificationSchema);

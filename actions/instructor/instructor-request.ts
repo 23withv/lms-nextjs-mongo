@@ -13,7 +13,10 @@ const RequestSchema = z.object({
   
   linkedin: z.union([
     z.literal(""), 
-    z.string().regex(/^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+\/?$/, "Invalid LinkedIn URL (must be linkedin.com/in/username)")
+    z.string().regex(
+      /^https?:\/\/((www|\w{2,3})\.)?linkedin\.com\/in\/[\w\-\_]+\/?$/, 
+      "Invalid LinkedIn URL (e.g. https://id.linkedin.com/in/username)"
+    )
   ]),
 
   languages: z.string().min(1, "Please list your programming languages"),
